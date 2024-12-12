@@ -1,12 +1,14 @@
 package io.github.felipeecp.ebank.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.felipeecp.ebank.exception.ApiError;
 import io.github.felipeecp.ebank.repository.UserRepository;
 import io.github.felipeecp.ebank.security.CustomUserDetailService;
 import io.github.felipeecp.ebank.security.JwtAuthenticationFilter;
 import io.github.felipeecp.ebank.security.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -18,7 +20,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
 
@@ -43,16 +44,37 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception{
-        http.csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        http
+                .cors(cors -> {})
+                .csrf(csrf -> csrf.disable())
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, ex) -> {
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(HttpStatus.FORBIDDEN.value());
+                            ApiError error = new ApiError(
+                                    HttpStatus.FORBIDDEN.value(),
+                                    "Acesso negado. Autenticação é necessária para acessar este recurso."
+                            );
+                            response.getWriter().write(new ObjectMapper().writeValueAsString(error));
+                        })
+                        .accessDeniedHandler((request, response, ex) -> {
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(HttpStatus.FORBIDDEN.value());
+                            ApiError error = new ApiError(
+                                    HttpStatus.FORBIDDEN.value(),
+                                    "Acesso negado. Você não tem permissão para acessar este recurso."
+                            );
+                            response.getWriter().write(new ObjectMapper().writeValueAsString(error));
+                        })
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 

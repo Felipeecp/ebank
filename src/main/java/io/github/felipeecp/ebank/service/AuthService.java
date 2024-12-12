@@ -4,13 +4,14 @@ import io.github.felipeecp.ebank.exception.BusinessException;
 import io.github.felipeecp.ebank.model.dto.AuthRequestDTO;
 import io.github.felipeecp.ebank.model.dto.AuthResponseDTO;
 import io.github.felipeecp.ebank.model.dto.RegisterRequestDTO;
+import io.github.felipeecp.ebank.model.entity.Account;
 import io.github.felipeecp.ebank.model.entity.Customer;
 import io.github.felipeecp.ebank.model.entity.User;
+import io.github.felipeecp.ebank.repository.AccountRepository;
 import io.github.felipeecp.ebank.repository.CustomerRepository;
 import io.github.felipeecp.ebank.repository.UserRepository;
 import io.github.felipeecp.ebank.security.JwtTokenProvider;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,14 +26,16 @@ public class AuthService {
     private final JwtTokenProvider tokenProvider;
     private final CustomerRepository customerRepository;
     private final CustomerService customerService;
+    private final AccountRepository accountRepository;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider, CustomerRepository customerRepository, CustomerService customerService) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider, CustomerRepository customerRepository, CustomerService customerService, AccountRepository accountRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
         this.customerRepository = customerRepository;
         this.customerService = customerService;
+        this.accountRepository = accountRepository;
     }
 
     @Transactional
@@ -52,10 +55,14 @@ public class AuthService {
         customer.setName(request.name());
         customer.setAge(request.age());
         customer.setEmail(request.email());
-        customer.setAccountNumber(customerService.generateAccountNumber());
         customer.setUser(user);
 
         customerRepository.save(customer);
+
+        Account account = new Account();
+        account.setAccountNumber(customerService.generateAccountNumber());
+        account.setCustomer(customer);
+        accountRepository.save(account);
     }
 
     public AuthResponseDTO login(AuthRequestDTO request) throws BusinessException {
@@ -67,7 +74,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(()->new BusinessException("Usuário não encontrado"));
 
-        return new AuthResponseDTO(token, user.getEmail(), user.getCustomer().getName(), user.getCustomer().getAccountNumber());
+        return new AuthResponseDTO(token, user.getEmail(), user.getCustomer().getName(), user.getCustomer().getAccount().getAccountNumber());
     }
 
 }

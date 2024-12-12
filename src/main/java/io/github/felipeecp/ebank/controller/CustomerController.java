@@ -4,7 +4,6 @@ import io.github.felipeecp.ebank.exception.BusinessException;
 import io.github.felipeecp.ebank.model.dto.CustomerDTO;
 import io.github.felipeecp.ebank.service.CustomerService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

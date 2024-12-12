@@ -1,9 +1,6 @@
 package io.github.felipeecp.ebank.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -33,6 +30,18 @@ public class User {
     @PrePersist
     protected void onCreate(){
         createdAt = LocalDateTime.now();
+    }
+
+    public User() {
+    }
+
+    public User(Long id, String email, String password, String role, Customer customer, LocalDateTime createdAt) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.customer = customer;
+        this.createdAt = createdAt;
     }
 
     public Long getId() {

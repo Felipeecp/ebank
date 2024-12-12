@@ -6,7 +6,6 @@ import io.github.felipeecp.ebank.model.dto.CustomerDTO;
 import io.github.felipeecp.ebank.model.entity.Customer;
 import io.github.felipeecp.ebank.repository.CustomerRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -28,17 +27,17 @@ public class CustomerService {
         }
 
         Customer customer = customerMapper.toEntity(dto);
-        customer.setAccountNumber(generateAccountNumber());
+        customer.getAccount().setAccountNumber(generateAccountNumber());
 
         return customerMapper.toDTO(customerRepository.save(customer));
     }
 
     public String generateAccountNumber(){
-        return UUID.randomUUID().toString().substring(0,0);
+        return UUID.randomUUID().toString().substring(0,8);
     }
 
     public CustomerDTO findByAccountNumber(String accountNumber) throws BusinessException {
-        return customerRepository.findByAccountNumber(accountNumber)
+        return customerRepository.findByAccountNumberWithUser(accountNumber)
                 .map(customerMapper::toDTO)
                 .orElseThrow(()->new BusinessException("Cliente não encontrado"));
     }

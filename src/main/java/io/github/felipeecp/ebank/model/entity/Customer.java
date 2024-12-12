@@ -1,11 +1,10 @@
 package io.github.felipeecp.ebank.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
-@EqualsAndHashCode(of = "id")
 @Entity
 @Table(name = "customers")
 public class Customer {
@@ -23,8 +22,9 @@ public class Customer {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "account_number", nullable = false, unique = true)
-    private String accountNumber;
+    @JsonManagedReference
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Account account;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -35,6 +35,20 @@ public class Customer {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public Customer() {
+    }
+
+    public Customer(Long id, String name, Integer age, String email, Account account, LocalDateTime createdAt, LocalDateTime updatedAt, User user) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.email = email;
+        this.account = account;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.user = user;
+    }
 
     @PrePersist
     protected void onCreate(){
@@ -79,14 +93,6 @@ public class Customer {
         this.email = email;
     }
 
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -109,5 +115,13 @@ public class Customer {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }

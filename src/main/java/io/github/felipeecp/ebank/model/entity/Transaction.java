@@ -1,5 +1,6 @@
 package io.github.felipeecp.ebank.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.github.felipeecp.ebank.model.enums.TransactionType;
 import jakarta.persistence.*;
 
@@ -14,9 +15,10 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnoreProperties({"customer", "creditLimit", "usedCredit", "dailyTransferLimit", "totalTransferredToday", "lastTransferDate", "status"})
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    @JoinColumn(name = "account_number", nullable = false)
+    private Account account;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -27,6 +29,15 @@ public class Transaction {
 
     @Column(nullable = false)
     private LocalDateTime dateTime;
+
+    @Column()
+    private String description;
+
+    @Column(name = "related_account_number")
+    private String relatedAccountNumber;
+
+    public Transaction() {
+    }
 
     @PrePersist
     protected void onCreate(){
@@ -39,14 +50,6 @@ public class Transaction {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
     }
 
     public TransactionType getType() {
@@ -71,5 +74,29 @@ public class Transaction {
 
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getRelatedAccountNumber() {
+        return relatedAccountNumber;
+    }
+
+    public void setRelatedAccountNumber(String relatedAccountNumber) {
+        this.relatedAccountNumber = relatedAccountNumber;
     }
 }

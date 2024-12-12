@@ -13,7 +13,7 @@ public class CustomerMapper {
                 customer.getName(),
                 customer.getAge(),
                 customer.getEmail(),
-                customer.getAccountNumber()
+                customer.getAccount().getAccountNumber()
         );
     }
 
@@ -22,7 +22,7 @@ public class CustomerMapper {
         customer.setName(customerDTO.name());
         customer.setAge(customerDTO.age());
         customer.setEmail(customerDTO.email());
-        customer.setAccountNumber(customerDTO.accountNumber());
+        customer.getAccount().setAccountNumber(customerDTO.accountNumber());
         return customer;
     }
 

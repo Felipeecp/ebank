@@ -3,7 +3,6 @@ package io.github.felipeecp.ebank.model.dto;
 import io.github.felipeecp.ebank.model.enums.TransactionType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.Data;
 
 import java.math.BigDecimal;
 
