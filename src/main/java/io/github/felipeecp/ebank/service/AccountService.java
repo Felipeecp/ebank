@@ -10,7 +10,6 @@ import io.github.felipeecp.ebank.model.enums.TransactionType;
 import io.github.felipeecp.ebank.model.enums.TransferType;
 import io.github.felipeecp.ebank.repository.AccountRepository;
 import io.github.felipeecp.ebank.repository.TransactionRepository;
-import io.github.felipeecp.ebank.security.SecurityUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -27,16 +26,14 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final TransactionMapper transactionMapper;
-    private final SecurityUtils securityUtils;
 
     private static final BigDecimal MINIMUM_DEPOSIT = new BigDecimal("10.00");
     private static final BigDecimal MAXIMUM_CREDIT_LIMIT = new BigDecimal("10000.00");
 
-    public AccountService(AccountRepository accountRepository, TransactionRepository transactionRepository, TransactionMapper transactionMapper, SecurityUtils securityUtils) {
+    public AccountService(AccountRepository accountRepository, TransactionRepository transactionRepository, TransactionMapper transactionMapper) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.transactionMapper = transactionMapper;
-        this.securityUtils = securityUtils;
     }
 
     @Transactional
