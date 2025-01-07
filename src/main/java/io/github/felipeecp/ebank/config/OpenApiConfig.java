@@ -4,7 +4,7 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,22 +13,21 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
 
     @Bean
-    public OpenAPI bankApiOpenAPI(){
-        final String securitySchemaName = "bearerAuth";
-
+    public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info()
-                        .title("Bank API")
-                        .description("API for banking operations - IBM Challenge")
-                        .version("1.0")
-                ).addSecurityItem(new SecurityRequirement()
-                        .addList(securitySchemaName))
                 .components(new Components()
-                        .addSecuritySchemes(securitySchemaName,
+                        .addSecuritySchemes("bearerAuth",
                                 new SecurityScheme()
-                                        .name(securitySchemaName)
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
-                                        .bearerFormat("JWT")));
+                                        .bearerFormat("JWT")
+                                        .description("JWT token de autenticação")))
+                .info(new Info()
+                        .title("E-Bank API")
+                        .description("API para sistema bancário digital")
+                        .version("1.0.0")
+                        .contact(new Contact()
+                                .name("Equipe E-Bank")
+                                .email("felipe.eng@gmail.com")));
     }
 }

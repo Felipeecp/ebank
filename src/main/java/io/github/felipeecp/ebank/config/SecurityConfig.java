@@ -32,6 +32,17 @@ public class SecurityConfig {
         this.userRepository = userRepository;
     }
 
+    private static final String[] SWAGGER_WHITELIST = {
+            "/v3/api-docs/**",
+            "/v3/api-docs",
+            "/v3/api-docs/swagger-config",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/swagger-resources/**",
+            "/swagger-resources",
+            "/webjars/**"
+    };
+
     @Bean
     public UserDetailsService userDetailsService(){
         return new CustomUserDetailService(userRepository);
@@ -72,6 +83,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

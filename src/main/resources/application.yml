@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${DB_URL}
+    url: jdbc:postgresql://localhost:5432/bank_db
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -17,5 +17,14 @@ server:
   servlet:
     context-path: /api
 
-
-
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    config-url: /api/v3/api-docs/swagger-config
+    url: /api/v3/api-docs
+  paths-to-match: /**
+  packages-to-scan: io.github.felipeecp.ebank.controller
+  default-produces-media-type: application/json
